@@ -2,69 +2,117 @@
 
 This directory contains the RESTful API for the **Unguka (Farmer Price Intelligence System)**. It is built using **NestJS** and **MongoDB** to serve as the core logic and data persistence layer for farmers, cooperatives, and NGOs.
 
+## 🚀 Live Environment
+- **Production API URL**: `https://unguka-2ygk.onrender.com/v1`
+- **Interactive Documentation (Swagger)**: `https://unguka-2ygk.onrender.com/docs`
+
+---
+
 ## 🛠 Tech Stack
 
 - **Framework**: [NestJS](https://nestjs.com/) (Node.js)
-- **Database**: [MongoDB Atlas](https://www.mongodb.com/atlas) (with Mongoose)
-- **Auth**: JWT (JSON Web Tokens) with `bcrypt` password hashing
-- **Documentation**: [Swagger (OpenAPI 3.0)](https://swagger.io/)
-- **ID System**: UUIDv7 (for sortable, unique identifiers)
+- **Database**: [MongoDB Atlas](https://www.mongodb.com/atlas)
+- **Auth**: JWT (JSON Web Tokens) with `bcrypt`
+- **Documentation**: Swagger (OpenAPI 3.0)
+- **ID System**: UUIDv7 (Sortable & unique)
 
-## 📁 Directory Structure (under `api/`)
+---
 
-- `src/auth/` — Signup, Login, and Password management
-- `src/farms/` — Farm CRUD (Ownership-scoped)
-- `src/users/` — User management (Admin only)
-- `src/organizations/` — Cooperatives & NGOs (Admin only)
-- `src/schemas/` — Mongoose database schemas
-- `src/common/` — Guards, Decorators, and Shared logic
+## 💻 Frontend Integration Guide
 
-## 🚀 Getting Started
+### 1. Authentication Flow
+All requests to protected routes must include the Bearer token in the header:
+`Authorization: Bearer <your_jwt_token>`
 
-1. **Move into the API directory**:
-   ```bash
-   cd api
-   ```
+#### **Sign Up**
+`POST /v1/auth/signup`
+```json
+{
+  "phone_e164": "+250780000000",
+  "password": "securePassword123",
+  "role": "farmer", // farmer, coop_manager, or ngo_user
+  "full_name": "John Doe",
+  "language": "rw", // rw, en, or fr
+  "district": "Gasabo",
+  "sector": "Bumbogo",
+  "gps_lat": -1.9441, // Optional
+  "gps_lng": 30.0619  // Optional
+}
+```
 
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
+#### **Log In**
+`POST /v1/auth/login`
+```json
+{
+  "phone_e164": "+250780000000",
+  "password": "securePassword123"
+}
+```
+**Response:** Returns an `access_token` and the `user` object.
 
-3. **Environment Setup**:
-   Create a `.env` file based on `.env.example`:
-   - `MONGODB_URI`: Your MongoDB Atlas connection string
-   - `JWT_SECRET`: Secret key for token signing
-   - `PORT`: Default is 3000
+---
 
-4. **Run Development Server**:
-   ```bash
-   npm run start:dev
-   ```
+### 2. Farm Management (CRUD)
 
-## 🧪 Testing the API
+#### **Create a Farm**
+`POST /v1/farms`
+```json
+{
+  "name": "Bumbogo Maize Plot",
+  "size_ha": 1.5,
+  "district": "Gasabo",
+  "sector": "Bumbogo",
+  "gps_lat": -1.9441,
+  "gps_lng": 30.0619
+}
+```
 
-### 1. Swagger UI (Recommended)
-The easiest way to test the API is through the built-in Swagger documentation.
-- **URL**: `http://localhost:3000/docs` (Local) or `https://your-app.render.com/docs` (Production)
-- **Usage**:
-  1. Go to `POST /v1/auth/signup` to create a test user.
-  2. Go to `POST /v1/auth/login` to get an `access_token`.
-  3. Click the **Authorize** button at the top and paste the token.
-  4. You can now call protected routes like `GET /v1/farms`.
+#### **Get My Farms**
+`GET /v1/farms`
+- **Farmer**: Returns only their own farms.
+- **Admin**: Returns all farms in the system.
 
-### 2. Authentication Flow
-- **Signup**: Use `POST /v1/auth/signup`. You must provide `phone_e164`, `password`, and `role` (farmer, coop_manager, or ngo_user).
-- **Login**: Use `POST /v1/auth/login`. Returns a JWT token valid for 7 days.
+#### **Update a Farm**
+`PATCH /v1/farms/:id`
+```json
+{
+  "name": "Updated Farm Name",
+  "size_ha": 2.0
+}
+```
 
-### 3. Farm CRUD Rules
-- **Farmers**: Can only see, update, and delete farms that belong to their own `user_id`.
-- **Admins**: Can see and manage all farms in the system.
-- **Soft Delete**: Deleting a farm sets an `archived_at` timestamp rather than removing the record from the database.
+#### **Delete a Farm (Soft Delete)**
+`DELETE /v1/farms/:id`
+*Note: This does not erase the record; it sets an `archived_at` timestamp.*
+
+---
+
+## 🧪 Testing instructions
+
+### Swagger UI
+Go to `https://unguka-2ygk.onrender.com/docs` to test every endpoint directly from your browser. 
+1. Use `/auth/signup` to create a user.
+2. Use `/auth/login` to get a token.
+3. Click **Authorize** at the top and paste your token.
+4. Try the `/farms` endpoints!
+
+---
+
+## 🚀 Local Development
+
+1. `cd api`
+2. `npm install`
+3. Create `.env` (Copy from `.env.example`)
+4. `npm run start:dev`
 
 ## 📜 API Conventions
-
-- **Prefix**: All routes are prefixed with `/v1`.
-- **Auth**: Protected routes require `Authorization: Bearer <token>`.
-- **Naming**: Use `snake_case` for all JSON keys in requests and responses.
-- **Quantities**: Farm sizes are handled as `numeric` (hectares).
+- **Prefix**: `/v1`
+- **Naming**: `snake_case` for all JSON keys.
+- **Errors**: Standard NestJS error format:
+```json
+{
+  "statusCode": 400,
+  "message": ["phone_e164 must be a valid phone number"],
+  "error": "Bad Request"
+}
+```
