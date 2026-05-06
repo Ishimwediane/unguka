@@ -9,6 +9,8 @@ import { Membership, MembershipSchema } from './schemas/membership.schema';
 import { Crop, CropSchema } from './schemas/crop.schema';
 import { Farm, FarmSchema } from './schemas/farm.schema';
 import { FarmCrop, FarmCropSchema } from './schemas/farm-crop.schema';
+import { AuthModule } from './auth/auth.module';
+import { FarmsModule } from './farms/farms.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { FarmCrop, FarmCropSchema } from './schemas/farm-crop.schema';
       { name: Farm.name, schema: FarmSchema },
       { name: FarmCrop.name, schema: FarmCropSchema },
     ]),
+    AuthModule,
+    FarmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
