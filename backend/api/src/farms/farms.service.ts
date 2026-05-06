@@ -24,7 +24,7 @@ export class FarmsService {
   async findAll(
     requesterId: string,
     requesterRole: string,
-    limit = 20,
+    limit = 1000,
     cursor?: string,
   ): Promise<{ items: Farm[]; next_cursor: string | null }> {
     const query: any = { archived_at: null };

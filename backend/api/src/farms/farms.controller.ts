@@ -39,7 +39,7 @@ export class FarmsController {
     return this.farmsService.findAll(
       req.user.id,
       req.user.role,
-      limit ? parseInt(limit) : 20,
+      limit ? parseInt(limit) : 1000,
       cursor,
     );
   }
