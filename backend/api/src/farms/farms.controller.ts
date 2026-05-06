@@ -10,16 +10,20 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FarmsService } from './farms.service';
 import { CreateFarmDto, UpdateFarmDto } from './farms.dto';
 
+@ApiTags('Farms')
+@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
 @Controller('farms')
 export class FarmsController {
   constructor(private readonly farmsService: FarmsService) {}
 
   /** POST /v1/farms — farmer creates their own farm */
+  @ApiOperation({ summary: 'Create a new farm' })
   @Post()
   create(@Request() req, @Body() dto: CreateFarmDto) {
     return this.farmsService.create(req.user.id, dto);
