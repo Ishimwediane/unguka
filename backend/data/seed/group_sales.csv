@@ -1,0 +1,5 @@
+id,organization_id,crop_id,target_qty_kg,target_price_per_kg_rwf,collection_center,collection_lat,collection_lng,deadline_at,buyer_name,status
+ebfb2a2d-76e4-4a9d-9c42-0b371e8aaa9f,6a004f70-e3cb-43be-8cb4-f5dfca79db8d,78113fd6-bf9b-4359-bfbb-76775ba9e97b,2000,1016,Nyabugogo Market,-1.9441,30.0619,2026-05-11T10:00:00Z,Inyange Industries,open
+ebfb9ac9-9203-4a86-8c6c-214a29457ff6,b2a85ea6-e478-422c-8d39-c0043e2f738d,2eaa1d16-1d19-4353-bb97-6f1e97698917,3000,776,Kimironko Market,-1.9355,30.1127,2026-05-11T10:00:00Z,Rwanda Trading Co.,filled
+729e52fd-b7b4-4452-b7cd-67d9d97846f6,5298c626-cc62-4d8c-a36b-423d10557004,f5ba7b38-fd1d-46d7-ba13-67e459a64d35,5000,531,Kimisagara Market,-1.96,30.05,2026-05-09T10:00:00Z,Minimex Ltd,confirmed
+65dbd800-4fdd-4281-8825-f5fab23ec761,2b93e51e-925a-4cd1-abfb-ed5931fae212,a1f01ef8-bbee-4b27-8d00-2aa400abd3d5,4000,767,Kibuye Market,-2.06,29.3489,2026-05-14T10:00:00Z,EAX Rwanda,collected
