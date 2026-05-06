@@ -13,6 +13,16 @@ import { AuthModule } from './auth/auth.module';
 import { FarmsModule } from './farms/farms.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
+import { ExpensesModule } from './expenses/expenses.module';
+import { HarvestsModule } from './harvests/harvests.module';
+import { SalesModule } from './sales/sales.module';
+import { PricesModule } from './prices/prices.module';
+import { InsightsModule } from './insights/insights.module';
+import { Expense, ExpenseSchema } from './schemas/expense.schema';
+import { Harvest, HarvestSchema } from './schemas/harvest.schema';
+import { Sale, SaleSchema } from './schemas/sale.schema';
+import { Market, MarketSchema } from './schemas/market.schema';
+import { MarketPrice, MarketPriceSchema } from './schemas/market-price.schema';
 
 @Module({
   imports: [
@@ -31,11 +41,21 @@ import { OrganizationsModule } from './organizations/organizations.module';
       { name: Crop.name, schema: CropSchema },
       { name: Farm.name, schema: FarmSchema },
       { name: FarmCrop.name, schema: FarmCropSchema },
+      { name: Expense.name, schema: ExpenseSchema },
+      { name: Harvest.name, schema: HarvestSchema },
+      { name: Sale.name, schema: SaleSchema },
+      { name: Market.name, schema: MarketSchema },
+      { name: MarketPrice.name, schema: MarketPriceSchema },
     ]),
     AuthModule,
     FarmsModule,
     UsersModule,
     OrganizationsModule,
+    ExpensesModule,
+    HarvestsModule,
+    SalesModule,
+    PricesModule,
+    InsightsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
