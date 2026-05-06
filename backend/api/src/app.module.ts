@@ -11,6 +11,8 @@ import { Farm, FarmSchema } from './schemas/farm.schema';
 import { FarmCrop, FarmCropSchema } from './schemas/farm-crop.schema';
 import { AuthModule } from './auth/auth.module';
 import { FarmsModule } from './farms/farms.module';
+import { UsersModule } from './users/users.module';
+import { OrganizationsModule } from './organizations/organizations.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { FarmsModule } from './farms/farms.module';
     ]),
     AuthModule,
     FarmsModule,
+    UsersModule,
+    OrganizationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
