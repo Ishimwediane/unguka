@@ -1,9 +1,17 @@
-import { IsString, Matches, IsOptional, IsIn, IsNumber } from 'class-validator';
+import { IsString, Matches, IsOptional, IsIn, IsNumber, MinLength } from 'class-validator';
 
-export class RequestOtpDto {
+export class SignupDto {
   @IsString()
   @Matches(/^\+2507[2389]\d{7}$/, { message: 'Invalid Rwanda phone number' })
-  phone_e164: string;
+  phone_e164!: string;
+
+  @IsString()
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  password!: string;
+
+  @IsString()
+  @IsIn(['farmer', 'coop_manager', 'ngo_user'])
+  role!: string;
 
   @IsOptional()
   @IsString()
@@ -30,11 +38,11 @@ export class RequestOtpDto {
   gps_lng?: number;
 }
 
-export class VerifyOtpDto {
+export class LoginDto {
   @IsString()
   @Matches(/^\+2507[2389]\d{7}$/, { message: 'Invalid Rwanda phone number' })
-  phone_e164: string;
+  phone_e164!: string;
 
   @IsString()
-  otp_code: string;
+  password!: string;
 }

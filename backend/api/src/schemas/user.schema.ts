@@ -12,6 +12,9 @@ export class User {
   phone_e164!: string;
 
   @Prop()
+  password?: string;
+
+  @Prop()
   full_name?: string;
 
   @Prop({ required: true, default: 'rw', enum: ['rw', 'en', 'fr'] })
