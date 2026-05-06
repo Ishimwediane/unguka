@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
 import { v7 as uuidv7 } from 'uuid';
+import { RequestOtpDto } from './auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async requestOtp(phone_e164: string) {
+  async requestOtp(dto: RequestOtpDto) {
+    const { phone_e164, full_name, language, district, sector, gps_lat, gps_lng } = dto;
     const otp_code = Math.floor(100000 + Math.random() * 900000).toString();
     const otp_expires_at = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
@@ -22,7 +24,12 @@ export class AuthService {
       user = new this.userModel({
         id: uuidv7(),
         phone_e164,
-        language: 'rw',
+        full_name,
+        language: language || 'rw',
+        district,
+        sector,
+        gps_lat,
+        gps_lng,
         role: 'farmer',
         otp_code,
         otp_expires_at,

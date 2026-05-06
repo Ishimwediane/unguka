@@ -8,7 +8,7 @@ export class AuthController {
 
   @Post('request-otp')
   requestOtp(@Body() dto: RequestOtpDto) {
-    return this.authService.requestOtp(dto.phone_e164);
+    return this.authService.requestOtp(dto);
   }
 
   @Post('verify-otp')
