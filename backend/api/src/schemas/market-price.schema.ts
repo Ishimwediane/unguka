@@ -9,7 +9,7 @@ export class MarketPrice {
   @Prop({ required: true }) market_id!: string;
   @Prop({ required: true }) crop_id!: string;
   @Prop({ required: true }) price_per_kg_rwf!: number;
-  @Prop({ required: true, enum: ['farmer_report', 'coop_feed', 'manual', 'gov_feed'], default: 'manual' }) source!: string;
+  @Prop({ required: true, default: 'manual' }) source!: string;
   @Prop({ required: true, default: 1 }) source_count!: number;
   @Prop({ required: true, default: () => new Date() }) reported_at!: Date;
 }

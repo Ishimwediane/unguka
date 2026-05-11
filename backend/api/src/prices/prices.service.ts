@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { v7 as uuidv7 } from 'uuid';
 import { MarketPrice, MarketPriceDocument } from '../schemas/market-price.schema';
 import { Market, MarketDocument } from '../schemas/market.schema';
 
@@ -19,7 +20,7 @@ export class PricesService {
   constructor(
     @InjectModel(MarketPrice.name) private priceModel: Model<MarketPriceDocument>,
     @InjectModel(Market.name) private marketModel: Model<MarketDocument>,
-  ) {}
+  ) { }
 
   async getLatestByCrop(crop_id: string) {
     const prices = await this.priceModel
@@ -69,6 +70,36 @@ export class PricesService {
     };
   }
 
+  async getPriceTrend(market_id: string, crop_id: string) {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const latest = await this.priceModel
+      .findOne({ market_id, crop_id })
+      .sort({ reported_at: -1 })
+      .lean();
+
+    if (!latest) return 'stable';
+
+    const historical = await this.priceModel
+      .findOne({
+        market_id,
+        crop_id,
+        reported_at: { $lte: sevenDaysAgo },
+      })
+      .sort({ reported_at: -1 })
+      .lean();
+
+    if (!historical) return 'stable';
+
+    const diff = latest.price_per_kg_rwf - historical.price_per_kg_rwf;
+    const threshold = historical.price_per_kg_rwf * 0.02;
+
+    if (diff > threshold) return 'rising';
+    if (diff < -threshold) return 'falling';
+    return 'stable';
+  }
+
   async getTrending() {
     const since = new Date(Date.now() - 7 * 24 * 3600 * 1000);
 
@@ -102,5 +133,18 @@ export class PricesService {
     ]);
 
     return result;
+  }
+
+  async reportFromSale(market_id: string, crop_id: string, price: number) {
+    const report = new this.priceModel({
+      id: uuidv7(),
+      market_id,
+      crop_id,
+      price_per_kg_rwf: price,
+      source: 'farmer_report',
+      source_count: 1,
+      reported_at: new Date(),
+    });
+    return report.save();
   }
 }
