@@ -50,9 +50,100 @@ All requests to protected routes must include the Bearer token in the header:
 ```
 **Response:** Returns an `access_token` and the `user` object.
 
+### 2. Farmer Insights & Dashboard
+These endpoints provide the "intelligence" for the home screen.
+
+#### **Home Summary (Profit & Expenses)**
+`GET /v1/insights/summary`
+Returns aggregated financial data for the authenticated farmer.
+```json
+{
+  "active_crops_count": 2,
+  "total_estimated_revenue_rwf": 1824000,
+  "total_expenses_rwf": 25000,
+  "estimated_profit_rwf": 1799000
+}
+```
+
+#### **Smart Recommendations**
+`GET /v1/insights`
+Returns actionable cards for the farmer (e.g., "Sell Now" or "Wait").
+```json
+[
+  {
+    "farm_crop_id": "uuid",
+    "crop_id": "uuid",
+    "kind": "sell_now",
+    "payload": {
+      "market_name": "Kimironko",
+      "price_per_kg_rwf": 950,
+      "explanation_en": "Best market: Kimironko, +120 RWF/kg above local"
+    }
+  }
+]
+```
+
 ---
 
-### 2. Farm Management (CRUD)
+### 3. Market Intelligence
+Real-time pricing data with trust layers and historical trends.
+
+#### **Find Best Market**
+`GET /v1/prices/best?crop_id={id}&lat={lat}&lng={lng}`
+Calculates the best place to sell based on price and transport penalty.
+
+#### **Market Comparison (Deep Dive)**
+`GET /v1/insights/market-comparison?farm_crop_id={id}`
+Shows profit if sold at *every* available market, including historical trends.
+```json
+[
+  {
+    "market_name": "Kimironko Market",
+    "estimated_profit_rwf": 1065600,
+    "trend": "rising", // rising, falling, or stable
+    "distance_km": 25,
+    "freshness_hours": 2
+  }
+]
+```
+
+#### **Trending Crops**
+`GET /v1/prices/trending`
+Returns crops with the highest price increase in the last 7 days.
+
+---
+
+### 4. Logging & Operations
+
+#### **Log an Expense**
+`POST /v1/farm-crops/:id/expenses`
+```json
+{
+  "category": "seeds", // seeds, fertilizer, labor, transport, other
+  "amount_rwf": 5000,
+  "occurred_on": "2026-05-11",
+  "note": "Optional note"
+}
+```
+
+#### **Log a Sale (Feedback Loop)**
+`POST /v1/sales`
+*Note: Logging a sale automatically reports the price to the system for other farmers.*
+```json
+{
+  "farm_crop_id": "uuid",
+  "market_id": "uuid",
+  "qty_kg": 100,
+  "price_per_kg_rwf": 950,
+  "total_amount_rwf": 95000,
+  "sold_at": "2026-05-11"
+}
+```
+
+---
+
+### 5. Farm Management (CRUD)
+*(Existing Farm endpoints stay here)*
 
 #### **Create a Farm**
 `POST /v1/farms`
@@ -67,52 +158,25 @@ All requests to protected routes must include the Bearer token in the header:
 }
 ```
 
-#### **Get My Farms**
-`GET /v1/farms`
-- **Farmer**: Returns only their own farms.
-- **Admin**: Returns all farms in the system.
-
-#### **Update a Farm**
-`PATCH /v1/farms/:id`
-```json
-{
-  "name": "Updated Farm Name",
-  "size_ha": 2.0
-}
-```
-
-#### **Delete a Farm (Soft Delete)**
-`DELETE /v1/farms/:id`
-*Note: This does not erase the record; it sets an `archived_at` timestamp.*
-
 ---
 
 ## 🧪 Testing instructions
 
+### Seed Data
+To populate your local DB with the full FPIS dataset (Crops, Markets, 200k Prices, 50 Farmers):
+1. `cd api`
+2. `npx ts-node src/common/seeds/seed.ts`
+
+### Automated Verification
+Run the verification suite to check all user stories:
+`npx ts-node verify_phase2.ts`
+
 ### Swagger UI
-Go to `https://unguka-2ygk.onrender.com/docs` to test every endpoint directly from your browser. 
-1. Use `/auth/signup` to create a user.
-2. Use `/auth/login` to get a token.
-3. Click **Authorize** at the top and paste your token.
-4. Try the `/farms` endpoints!
+Go to `http://localhost:3000/docs` to test every endpoint.
 
 ---
-
-## 🚀 Local Development
-
-1. `cd api`
-2. `npm install`
-3. Create `.env` (Copy from `.env.example`)
-4. `npm run start:dev`
 
 ## 📜 API Conventions
 - **Prefix**: `/v1`
 - **Naming**: `snake_case` for all JSON keys.
-- **Errors**: Standard NestJS error format:
-```json
-{
-  "statusCode": 400,
-  "message": ["phone_e164 must be a valid phone number"],
-  "error": "Bad Request"
-}
-```
+- **Errors**: Standard NestJS error format.
