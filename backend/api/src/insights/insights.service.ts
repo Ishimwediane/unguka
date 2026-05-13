@@ -6,6 +6,7 @@ import { Farm, FarmDocument } from '../schemas/farm.schema';
 import { User, UserDocument } from '../schemas/user.schema';
 import { Expense, ExpenseDocument } from '../schemas/expense.schema';
 import { Harvest, HarvestDocument } from '../schemas/harvest.schema';
+import { GroupSale, GroupSaleDocument } from '../schemas/group-sale.schema';
 import { PricesService } from '../prices/prices.service';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class InsightsService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Expense.name) private expenseModel: Model<ExpenseDocument>,
     @InjectModel(Harvest.name) private harvestModel: Model<HarvestDocument>,
+    @InjectModel(GroupSale.name) private groupModel: Model<GroupSaleDocument>,
     private pricesService: PricesService,
   ) { }
 
@@ -73,7 +75,36 @@ export class InsightsService {
         continue;
       }
 
-      // Rule 3: best market exists → best_market
+      // Rule 3: check open group sales for this crop → join_group if uplift ≥ 10%
+      const openGroups = await this.groupModel
+        .find({ crop_id: crop.crop_id, status: 'open', deadline_at: { $gte: new Date() } })
+        .lean();
+
+      for (const group of openGroups) {
+        if (!best.price_per_kg_rwf || !group.target_price_per_kg_rwf) continue;
+        const uplift_pct = ((group.target_price_per_kg_rwf - best.price_per_kg_rwf) / best.price_per_kg_rwf) * 100;
+        if (uplift_pct >= 10) {
+          recommendations.push({
+            farm_crop_id: crop.id,
+            crop_id: crop.crop_id,
+            kind: 'join_group',
+            confidence: 0.9,
+            payload: {
+              group_sale_id: group.id,
+              collection_center: group.collection_center,
+              target_price_per_kg_rwf: group.target_price_per_kg_rwf,
+              best_individual_price_rwf: best.price_per_kg_rwf,
+              uplift_pct: Math.round(uplift_pct),
+              deadline_at: group.deadline_at,
+              explanation_en: `Group earns +${Math.round(uplift_pct)}% over your local price. Join before ${new Date(group.deadline_at).toLocaleDateString()}.`,
+              explanation_rw: `Itsinda ryinjiza +${Math.round(uplift_pct)}% kuruta isoko ryawe. Injira mbere ya ${new Date(group.deadline_at).toLocaleDateString()}.`,
+            },
+          });
+          break; // one join_group recommendation per crop
+        }
+      }
+
+      // Rule 4: best market exists → best_market
       recommendations.push({
         farm_crop_id: crop.id,
         crop_id: crop.crop_id,

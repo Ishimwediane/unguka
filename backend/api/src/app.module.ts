@@ -18,6 +18,11 @@ import { HarvestsModule } from './harvests/harvests.module';
 import { SalesModule } from './sales/sales.module';
 import { PricesModule } from './prices/prices.module';
 import { InsightsModule } from './insights/insights.module';
+import { GroupsModule } from './groups/groups.module';
+import { CoopModule } from './coop/coop.module';
+import { GroupSale, GroupSaleSchema } from './schemas/group-sale.schema';
+import { GroupPledge, GroupPledgeSchema } from './schemas/group-pledge.schema';
+import { GroupCollection, GroupCollectionSchema } from './schemas/group-collection.schema';
 import { Expense, ExpenseSchema } from './schemas/expense.schema';
 import { Harvest, HarvestSchema } from './schemas/harvest.schema';
 import { Sale, SaleSchema } from './schemas/sale.schema';
@@ -46,6 +51,9 @@ import { MarketPrice, MarketPriceSchema } from './schemas/market-price.schema';
       { name: Sale.name, schema: SaleSchema },
       { name: Market.name, schema: MarketSchema },
       { name: MarketPrice.name, schema: MarketPriceSchema },
+      { name: GroupSale.name, schema: GroupSaleSchema },
+      { name: GroupPledge.name, schema: GroupPledgeSchema },
+      { name: GroupCollection.name, schema: GroupCollectionSchema },
     ]),
     AuthModule,
     FarmsModule,
@@ -56,6 +64,8 @@ import { MarketPrice, MarketPriceSchema } from './schemas/market-price.schema';
     SalesModule,
     PricesModule,
     InsightsModule,
+    GroupsModule,
+    CoopModule,
   ],
   controllers: [AppController],
   providers: [AppService],

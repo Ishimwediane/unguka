@@ -7,6 +7,7 @@ import { Farm, FarmSchema } from '../schemas/farm.schema';
 import { User, UserSchema } from '../schemas/user.schema';
 import { Expense, ExpenseSchema } from '../schemas/expense.schema';
 import { Harvest, HarvestSchema } from '../schemas/harvest.schema';
+import { GroupSale, GroupSaleSchema } from '../schemas/group-sale.schema';
 import { PricesModule } from '../prices/prices.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { PricesModule } from '../prices/prices.module';
       { name: User.name, schema: UserSchema },
       { name: Expense.name, schema: ExpenseSchema },
       { name: Harvest.name, schema: HarvestSchema },
+      { name: GroupSale.name, schema: GroupSaleSchema },
     ]),
     PricesModule,
   ],
